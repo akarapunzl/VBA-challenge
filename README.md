@@ -26,5 +26,6 @@ Sub Ticker(ws As Worksheet)
 ws.Activate
 
 --
+
 I used activity 06-stu_creditcardchecker from class to structure the basis of the code - to find the individual ticker and the total volume per ticker. I also worked with a tutor and the ASKBCS to develop the rest of the code, specifically the percent change, the max increase/decrease/total volume. 
 
