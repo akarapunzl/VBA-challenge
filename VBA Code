@@ -1,0 +1,137 @@
+Sub cycle()
+
+'set the variable
+Dim ws As Worksheet
+
+For Each ws In ActiveWorkbook.Worksheets
+    Ticker ws
+    
+Next
+
+End Sub
+Sub Ticker(ws As Worksheet)
+
+ws.Activate
+
+  ' Set an initial variable for holding the ticker
+  Dim Ticker As String
+
+  ' Set an initial variable for holding the total volume per ticker
+  Dim total_volume As Double
+  total_volume = 0
+
+  ' Keep track of the location for each ticker in the summary table
+  Dim Summary_Table_Row As Integer
+  Summary_Table_Row = 2
+  
+  'Set an initial variable for holding the increases/decrease/max volume
+  Dim ticker_increase As String
+  Dim ticker_decrease As String
+  Dim ticker_volume As String
+  Dim increase As Double
+  increase = 0
+  Dim decrease As Double
+  decrease = 0
+  Dim max_volume As Double
+  max_volume = 0
+  
+'set open price
+open_price = ws.Cells(2, 3).Value
+
+'set to find the last row
+lRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+
+  ' Loop through all credit card purchases
+  For i = 2 To lRow
+
+    ' Check if we are still within the same ticker,
+    If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+
+      ' Set the Ticker
+      Ticker = ws.Cells(i, 1).Value
+      
+      'Set the closed price
+      closed_price = ws.Cells(i, 6).Value
+      
+      'set the yearly change
+      yearly_change = closed_price - open_price
+      
+      'set the percent change
+      percent_change = yearly_change / open_price
+
+      ' Add to the Total Volume
+      total_volume = total_volume + ws.Cells(i, 7).Value
+
+      ' Print the Ticker in the Summary Table
+      ws.Range("I" & Summary_Table_Row).Value = Ticker
+      
+      'Print the yearly change in the summary
+      ws.Range("J" & Summary_Table_Row).Value = yearly_change
+      
+     'Yearly change colors
+     If yearly_change < 0 Then
+     
+     ws.Range("J" & Summary_Table_Row).Interior.ColorIndex = 3
+     
+     Else
+     ws.Range("J" & Summary_Table_Row).Interior.ColorIndex = 4
+     
+     End If
+      
+      'Print the percentage changein the summary table
+      ws.Range("K" & Summary_Table_Row).Value = percent_change
+
+      ' Print the Total Volume to the Summary Table
+      ws.Range("L" & Summary_Table_Row).Value = total_volume
+      
+'set the max increase
+  If percent_change > increase Then
+  increase = percent_change
+  ticker_increase = Ticker
+  
+  End If
+  
+  'set the max decrease
+  If percent_change < decrease Then
+  decrease = percent_change
+  ticker_decrease = Ticker
+  
+  End If
+  
+  'set the max volume
+  If total_volume > max_volume Then
+  max_volume = total_volume
+  ticker_volume = Ticker
+  
+  End If
+
+      ' Add one to the summary table row
+      Summary_Table_Row = Summary_Table_Row + 1
+      
+      'Set the open price
+      open_price = ws.Cells(i + 1, 3).Value
+      
+      ' Reset the Total Volume
+      total_volume = 0
+
+    ' If the cell immediately following a row is the same ticker
+    Else
+
+      ' Add to the Volume total
+      total_volume = total_volume + ws.Cells(i, 7).Value
+
+    End If
+
+  Next i
+  
+  'set the max placements
+  ws.Cells(2, 15).Value = ticker_increase
+  ws.Cells(3, 15).Value = ticker_decrease
+  ws.Cells(4, 15).Value = ticker_volume
+  ws.Cells(2, 16).Value = increase
+  ws.Cells(3, 16).Value = decrease
+  ws.Cells(4, 16).Value = max_volume
+
+End Sub
+
+
